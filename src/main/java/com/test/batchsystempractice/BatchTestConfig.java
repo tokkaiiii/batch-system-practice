@@ -29,18 +29,19 @@ public class BatchTestConfig {
       Step collectFilesToDeleteStep
   ) {
     return new JobBuilder("job1", jobRepository)
+        .listener(new FileSystemListener())
         .start(collectFilesToDeleteStep)
         .build();
   }
 
-// 1. 삭제할 파일 수집
+  // 1. 삭제할 파일 수집
   @Bean
   public Step collectFilesToDeleteStep(
       JobRepository jobRepository,
       PlatformTransactionManager transactionManager
   ) {
     return new StepBuilder("collectFilesToDeleteStep", jobRepository)
-        .tasklet(collectFilesToDeleteTasklet(null), transactionManager)
+        .tasklet(deleteFileTasklet(null), transactionManager)
         .build();
   }
 
@@ -50,16 +51,26 @@ public class BatchTestConfig {
       @Value("#{jobParameters['deleteFileBeforeDate']}") LocalDate deleteFileBeforeDate
   ) {
     return (contribution, chunkContext) -> {
-      log.info("파일 삭제를 시작합니다.");
-      log.info("{} 일 이전 파일을 삭제합니다.", deleteFileBeforeDate.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일")));
-      for (int i = 0; i <= 5; i++) {;
-        log.info("파일 삭제 중... 삭제 대상: {} 에 생성한 파일",deleteFileBeforeDate.minusDays(i).format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일")));
+      log.info("{} 일 이전 파일을 삭제합니다.",
+          deleteFileBeforeDate.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일")));
+      for (int i = 0; i <= 5; i++) {
+        log.info("파일 삭제 중... 삭제 대상: {} 에 생성한 파일",
+            deleteFileBeforeDate.minusDays(i).format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일")));
       }
-      log.info("파일 삭제가 완료되었습니다.");
       return null;
     };
   }
 
+  @Bean
+  public Tasklet deleteFileTasklet(DeleteFile deleteFile) {
+    return (contribution, chunkContext) -> {
+//      log.info("파일 삭제를 시작합니다.");
+      log.info("삭제할 파일: {}.{}", deleteFile.getFileName(), deleteFile.getExtension().getExtension());
+      // 실제 파일 삭제 로직을 여기에 추가
+//      log.info("파일 삭제가 완료되었습니다.");
+      return null;
+    };
+  }
 }
 
 
