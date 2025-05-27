@@ -1,6 +1,10 @@
 package com.test.batchsystempractice;
 
+import java.beans.PropertyEditor;
+import java.beans.PropertyEditorSupport;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Map;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +27,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 @Configuration
 @RequiredArgsConstructor
 public class BatchFileTestConfig {
+
   private final JobRepository jobRepository;
   private final PlatformTransactionManager transactionManager;
 
@@ -58,8 +63,19 @@ public class BatchFileTestConfig {
         .delimiter(",")
         .names("id", "bookName", "author", "date")
         .targetType(TestFile.class)
+        .customEditors(Map.of(LocalDate.class, dateTimeEditor()))
         .linesToSkip(1)
         .build();
+  }
+
+  private PropertyEditor dateTimeEditor() {
+    return new PropertyEditorSupport() {
+      @Override
+      public void setAsText(String text) throws IllegalArgumentException {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        setValue(LocalDate.parse(text, formatter));
+      }
+    };
   }
 
   /*@Bean
@@ -72,7 +88,7 @@ public class BatchFileTestConfig {
     private String id;
     private String bookName;
     private String author;
-    private String date;
+    private LocalDate date;
   }
 
 }
