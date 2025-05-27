@@ -91,10 +91,11 @@ public class BatchFileTestConfig {
     return new FlatFileItemWriterBuilder<TestOutputFile>()
         .name("itemWriter")
         .resource(new FileSystemResource(outputDir + "/test_output.csv"))
-        .delimited()
-        .delimiter(",")
+        .formatted()
+        .format("ID: %s | 책이름: %s | 저자: %s | 집필 날짜: %s | 작성일: %s")
         .names("id", "bookName", "author", "date", "recordDate")
-        .headerCallback(writer -> writer.write("ID,책이름,저자,집필 날짜,작성일"))
+        .headerCallback(writer -> writer.write("책 정보"))
+        .footerCallback(writer -> writer.write("파일 작성 완료"))
         .build();
   }
 
