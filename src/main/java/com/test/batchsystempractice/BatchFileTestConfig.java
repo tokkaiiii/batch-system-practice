@@ -11,6 +11,7 @@ import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.ItemReader;
+import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -30,26 +31,24 @@ public class BatchFileTestConfig {
       Step fileTestStep
   ) {
     return new JobBuilder("fileTestJob", jobRepository)
-//        .listener(new FileSystemListener())
         .start(fileTestStep)
         .build();
   }
 
   @Bean
   public Step fileTestStep(
-      JobRepository jobRepository,
-      ItemReader<TestFile> fileReader
+      JobRepository jobRepository
   ) {
     return new StepBuilder("fileTestStep", jobRepository)
         .<TestFile, TestFile>chunk(10, transactionManager)
-        .reader(fileReader)
+        .reader(fileReader(null))
         .writer(items -> items.forEach(System.out::println))
         .build();
   }
 
   @StepScope
   @Bean
-  public ItemReader<TestFile> fileReader(
+  public FlatFileItemReader<TestFile> fileReader(
       @Value("#{jobParameters['inputDir']}") String inputDir
   ) {
     return new FlatFileItemReaderBuilder<TestFile>()
@@ -73,7 +72,7 @@ public class BatchFileTestConfig {
     private String id;
     private String bookName;
     private String author;
-    private LocalDate date;
+    private String date;
   }
 
 }
