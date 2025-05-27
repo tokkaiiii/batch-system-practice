@@ -1,3 +1,4 @@
+/*
 package com.test.batchsystempractice;
 
 import lombok.extern.slf4j.Slf4j;
@@ -19,3 +20,4 @@ public class FileSystemListener {
     log.info("파일 삭제를 완료했습니다.");
   }
 }
+*/
