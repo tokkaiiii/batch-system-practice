@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -123,6 +124,8 @@ public class BatchFileTestConfig {
     private String recordDate; // 레코드 생성 날짜
   }
 
+
+  @AllArgsConstructor
   @Data
   public static class TestFile {
 
